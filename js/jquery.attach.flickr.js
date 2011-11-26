@@ -12,12 +12,13 @@
 		imageLink:true,
 		description:false,
 		clearContainer:false,
-		template:'interspersed', //interspersed , continuous, first-description, first-images
+		template:'interspersed', //interspersed , continuous, first-description, first-images,
 		tpl:null,
 		desCotentCSS:'content-css',
 		descCSS:'des-css',
 		dateCSS:'date-css',
 		tagCSS:'label notice',
+		titleImg:'title',
 		callback_end:function(){}
 	};
 	
@@ -33,27 +34,27 @@
 		  $.extend($.attachFlickr.settings, options);
 		  
 			return this.each(function(){
-			  console.log('init each');			  
+			  //console.log('init each');			  
 			});
 
 		},
 		show : function( ) {
 		  // IS
-		  console.log('show');	
+		  //console.log('show');	
 		   $.extend($.attachFlickr.settings, options);
 		},
 		hide : function( ) { 
 		  // GOOD
-		  console.log('hide');
+		  //console.log('hide');
 		   $.extend($.attachFlickr.settings, options);
 		},
 		update : function( content ) { 
 		  // !!! 
-		  console.log('update');
+		  //console.log('update');
 		   $.extend($.attachFlickr.settings, options);
 		},
 		complete_panel: function(options){
-			console.log('complete_panel');
+			//console.log('complete_panel');
 			$.extend($.attachFlickr.settings, options);			
 			$.attachFlickr.methods.__template($.attachFlickr.settings);
 	
@@ -63,7 +64,7 @@
 			$.extend($.attachFlickr.settings, options);
 			var tpl = $.attachFlickr.settings.template;
 			
-			console.log(tpl);
+			//console.log(tpl);
 			
 			switch(tpl) {
 				case 'interspersed':
@@ -142,11 +143,11 @@
 		photosSearch: function(options){
 			//
 			$.extend($.attachFlickr.settings, options);
-			console.log('photosSearch');
-			console.log(this.selector);
+			//console.log('photosSearch');
+			//console.log(this.selector);
 			
 			return this.each(function(){
-			  console.log('each');
+			  //console.log('each');
 			  	$.attachFlickr.settings._self = this;
 				$.attachFlickr.methods._photos('flickr.photos.search',options);
 			});
@@ -156,11 +157,11 @@
 		photosInfo: function(options){
 			//
 			$.extend($.attachFlickr.settings, options);
-			console.log('photosSearch');
-			console.log(this.selector);
+			//console.log('photosSearch');
+			//console.log(this.selector);
 			
 			return this.each(function(){
-			  console.log('photosInfo each');
+			  //console.log('photosInfo each');
 			  	$.attachFlickr.settings._self = this;
 				$.attachFlickr.methods.__clearContainer();
 				
@@ -201,7 +202,7 @@
 							var src = $.attachFlickr.methods.__src(value, $.attachFlickr.settings.thumbnail_size);
 							var alt = value.title;
 							var id = value.id;
-							var title = value.id + '-description';
+							var title = '#'+value.id + '-description';
 							var secret = value.secret;
 							
 							var img = new Image();
@@ -209,7 +210,7 @@
 							img.alt = alt;
 							img.id = id;
 													
-							$(img).attr('data',title);
+							$(img).attr($.attachFlickr.settings.titleImg,title);
 							$(img).attr('secret',secret);
 
 							if($.attachFlickr.settings.imageLink){
@@ -245,7 +246,7 @@
 			$.attachFlickr.settings.totalInfo = $.attachFlickr.settings.photos.length;
 			$.attachFlickr.settings.totalInfoCompleted = 1;
 			
-			console.log($.attachFlickr.settings.totalInfo);
+			//console.log($.attachFlickr.settings.totalInfo);
 			
 			$($.attachFlickr.settings.photos).each(function(item,value){
 				
@@ -302,11 +303,11 @@
 		,
 		__url: function(method, params) {
 			
-			console.log('__url');
+			//console.log('__url');
 			
 			var _url = 'http://api.flickr.com/services/rest/?method=' + method + '&format=json' + ($.attachFlickr.methods.__isEmpty(params) ? '' : '&' + $.param(params)) + '&jsoncallback=?';
 		  
-		  	console.log(_url);
+		  	//console.log(_url);
 		  
 		  return _url; 
 			
@@ -324,10 +325,10 @@
 			
 		  var translate_size = (size == undefined) ? '_s' : $.attachFlickr.methods.__translate(size);
 		  
-		  console.log('translate_size : '+translate_size);
+		  //console.log('translate_size : '+translate_size);
 		 
 		  var src = 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server +'/' + photo.id + '_' + photo.secret + translate_size + '.jpg'
-		   console.log(src);
+		   //console.log(src);
 		  return src;
 		},
 		__translate: function(size) {
@@ -335,6 +336,8 @@
 			case 'sq': return '_s' // square
 			case 't' : return '_t' // thumbnail
 			case 's' : return '_m' // small
+			case 'o' : return '_o' // original
+			case 'z' : return '_z' // original
 			case 'm' : return '' // medium
 			default : return '' // medium
 		  }
