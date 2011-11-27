@@ -4,22 +4,23 @@
 	$.attachFlickr = {};
 	
 	$.attachFlickr.settings = {
-		per_page:10,
-		user_id:'',
-		tags:'',
-		api_key:'',
-		thumbnail_size:'',
-		imageLink:true,
-		description:false,
-		clearContainer:false,
-		template:'interspersed', //interspersed , continuous, first-description, first-images,
-		tpl:null,
-		desCotentCSS:'content-css',
-		descCSS:'des-css',
-		dateCSS:'date-css',
-		tagCSS:'label notice',
-		titleImg:'title',
-		callback_end:function(){}
+		per_page:10,						//Photos per page
+		user_id:'',							//Any user id from flickr
+		tags:'',							//If you want to serach photos by tags
+		api_key:'',							//You must have an API Key from flickr
+		thumbnail_size:'',					//Thumbnail size sq (square), t (thumbnail), s (small), o (original), z (zoom)
+		imageLink:true,						//if you want a link images to large Image from flickr
+		description:false,					//if you want a image description from flickr
+		clearContainer:false,				//If you want remove previous content in container
+		template:'interspersed', 			//interspersed , continuous, first-description, first-images,
+		tpl:null,							//template for locate images and description
+		repeattpl:'<span>{images}</span>', 	//repeat template for list images
+		desCotentCSS:'content-css',			//css for content description span
+		descCSS:'des-css',					//css for description span
+		dateCSS:'date-css',					//css for date span
+		tagCSS:'label notice',				//css for tags
+		titleImg:'title',					//if you want to change title attribute for anoither attribute (this is because i need this for my personal project)
+		callback_end:function(){}			//callback function for 
 	};
 	
 	$.attachFlickr.APIFlickr = {
@@ -212,14 +213,21 @@
 													
 							$(img).attr($.attachFlickr.settings.titleImg,title);
 							$(img).attr('secret',secret);
-
+							
+							var element = img;
+	
 							if($.attachFlickr.settings.imageLink){
-								var mewElement = $.attachFlickr.methods.__linkTag(value,src).append(img)
-								imageslist.push(mewElement);
-								
-							}else{
-								imageslist.push(img);
+								element = $.attachFlickr.methods.__linkTag(value,src).append(img)
 							}
+							
+							var newElement = element
+							
+							if($.attachFlickr.settings.repeattpl){
+								newElement = $.attachFlickr.methods.__repeatTPL(element);
+								console.log('repeatTPL')
+							}
+							
+							imageslist.push(newElement);
 
 						});
 					}
@@ -337,7 +345,7 @@
 			case 't' : return '_t' // thumbnail
 			case 's' : return '_m' // small
 			case 'o' : return '_o' // original
-			case 'z' : return '_z' // original
+			case 'z' : return '_z' // zoom
 			case 'm' : return '' // medium
 			default : return '' // medium
 		  }
@@ -345,6 +353,12 @@
 		__linkTag: function(photo, href) {
 		  if (href === undefined) href = ['http://www.flickr.com/photos', photo.owner, photo.id].join('/')
 		  return $('<a href="' + href + '" title="' + photo.title + '"></a>');
+		},
+		__repeatTPL: function(obj) {
+		  var str = $.attachFlickr.settings.repeattpl;
+		  str.replace(/{images}/gi, '').replace(/{description}/gi, '');
+		  
+		  return $(str).append(obj);
 		},
 		__clearContainer: function(){
 			if($.attachFlickr.settings.clearContainer){
