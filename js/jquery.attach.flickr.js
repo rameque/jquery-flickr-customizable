@@ -20,6 +20,7 @@
 		descCSS:'des-css',					//css for description span
 		dateCSS:'date-css',					//css for date span
 		tagCSS:'label notice',				//css for tags
+		titleCSS:'title-css',				//css for Descrition Title
 		linkTagCSS:	'link-css',				//css for link for images			
 		titleImg:'title',					//if you want to change title attribute for anoither attribute (this is because i need this for my personal project)
 		callback_end:function(){}			//callback function for 
@@ -61,7 +62,6 @@
 		   $.extend($.flickr.settings, options);
 		},
 		complete_panel: function(options){
-			
 			$.extend($.flickr.settings, options);			
 			$.flickr.methods.__template(options);
 	
@@ -75,18 +75,18 @@
 			
 			switch(tpl) {
 				case 'interspersed':
-					$($.flickr.settings.photos).each(function(item,value){
-						var descItem = $.flickr.settings.images_description[item];
-						$($.flickr.settings._self).append(value).append(descItem);
+					$(options.photos).each(function(item,value){
+						var descItem = options.images_description[item];
+						$(options._self).append(value).append(descItem);
 					});
 					break
 					
 				case 'first-description':
-					$($.flickr.settings.images_description).each(function(item,value){
-						$($.flickr.settings._self).append(value);
+					$(options.images_description).each(function(item,value){
+						$(options._self).append(value);
 					});
-					$($.flickr.settings.photos).each(function(item,value){
-						$($.flickr.settings._self).append(value);
+					$(options.photos).each(function(item,value){
+						$(options._self).append(value);
 					});
 					break
 					
@@ -236,17 +236,20 @@
 							var newElement = element
 							
 							if(options.repeattpl){
-								newElement = $.flickr.methods.__repeatTPL(element,options);
+								newElement = $.flickr.methods.__repeatTPL(newElement,options);
 								//console.log('repeatTPL')
 							}
+							
 							
 							imageslist.push(newElement);
 
 						});
 					}
 				}
+				
 				options.photos = imageslist;
-								
+				
+							
 			}).complete(function(){
 				if(options.description){
 					options.images_description = new Array();
@@ -273,7 +276,7 @@
 				var photoId = '0';
 				var secret = '0';
 				
-				if(options.imageLink){
+				if(options.imageLink || options.repeattpl){
 					photoId = $(value).find('img').attr('id');
 					secret = $(value).find('img').attr('secret');
 				}else{
@@ -292,11 +295,13 @@
 				$.getJSON(URL, function(data) {
 					
 					if(data.photo){
+						var title = data.photo.title._content;
 						var description = data.photo.description._content;
 						var dateTaken = data.photo.dates.taken;
 						var tags = data.photo.tags.tag;
 						
 						var tpl = $('<div class="desc-content '+options.desCotentCSS+'" id="'+photoId+'-description"></div>');
+						tpl.append('<h3 class="title '+options.titleCSS+'">'+title+'</h3>');
 						tpl.append('<span class="desc '+options.descCSS+'">'+description+'</span>');
 						tpl.append('<span class="date '+options.dateCSS+'">'+dateTaken+'</span>');
 
