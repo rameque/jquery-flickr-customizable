@@ -1,7 +1,4 @@
-window.attachFlickr = new Object();
-
 (function( $ ) {
-	
 	
 	$.flickrClass = function(){};
 	
@@ -72,11 +69,11 @@ window.attachFlickr = new Object();
 			$.extend($.flickr.settings, options);
 			var tpl = options.template;
 			
-			console.log(tpl);
+			//console.log(tpl);
 			
 			switch(tpl) {
 				case 'interspersed':
-					console.log(options.images_description);
+					//console.log(options.images_description);
 					
 					$(options.photos).each(function(item,value){
 						$(options._self).append(value);
@@ -414,3 +411,6 @@ window.attachFlickr = new Object();
 
   };
 })( jQuery );
+
+var attachFlickr = (function() {});
+window.attachFlickr = window.$attachFlickr = attachFlickr;
