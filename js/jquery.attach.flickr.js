@@ -1,5 +1,6 @@
+window.attachFlickr = new Object();
+
 (function( $ ) {
-	
 	
 	
 	$.flickrClass = function(){};
