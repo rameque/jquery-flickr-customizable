@@ -71,14 +71,26 @@
 			$.extend($.flickr.settings, options);
 			var tpl = options.template;
 			
-			//console.log(tpl);
+			console.log(tpl);
 			
 			switch(tpl) {
 				case 'interspersed':
+					console.log(options.images_description);
+					
 					$(options.photos).each(function(item,value){
-						var descItem = options.images_description[item];
-						$(options._self).append(value).append(descItem);
+						$(options._self).append(value);
 					});
+					
+					$(options.images_description).each(function(item,value){
+						var desc = $(options.images_description[item]);
+						var descItemId = $(options.images_description[item]).attr('id');
+						var id = descItemId.replace('-description','');
+						var parent = $(options._self).find('#'+id).parent();
+						
+						desc.insertAfter(parent);
+					});
+					
+					
 					break
 					
 				case 'first-description':
@@ -136,6 +148,9 @@
 				case 'default' :
 				
 					$(options.photos).each(function(item,value){
+						$(options._self).append(value);
+					});
+					$(options.images_description).each(function(item,value){
 						$(options._self).append(value);
 					});
 					break
