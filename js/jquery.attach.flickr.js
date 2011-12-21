@@ -8,10 +8,12 @@
 		tags:'',							//If you want to serach photos by tags
 		api_key:'',							//You must have an API Key from flickr
 		thumbnail_size:'',					//Thumbnail size sq (square), t (thumbnail), s (small), o (original), z (zoom)
+		gallery_id:'',						//If you want search by gallery.
+		extras:'',							//A comma-delimited list of extra information to fetch for each returned record. Currently supported fields are: description, license, date_upload, date_taken, owner_name, icon_server, original_format, last_update, geo, tags, machine_tags, o_dims, views, media, path_alias, url_sq, url_t, url_s, url_m, url_z, url_l, url_o
 		imageLink:true,						//if you want a link images to large Image from flickr
 		description:false,					//if you want a image description from flickr
 		clearContainer:false,				//If you want remove previous content in container
-		template:'interspersed', 			//interspersed , continuous, first-description, first-images,
+		template:'interspersed', 			//interspersed , continuous, first-description, first-images,embebed
 		tpl:'',							//template for locate images and description
 		repeattpl:'', 	//repeat template for list images
 		desCotentCSS:'content-css',			//css for content description span
@@ -31,7 +33,11 @@
 	$.flickr.counter = 0;
 	
 	$.flickr.APIFlickr = {
-		'flickr.photos.search': {api_key:"",user_id:"",tags:"",tag_mode:"",text:"",min_upload_date:"",max_upload_date:"",min_taken_date:"",max_taken_date:"",license:"",sort:"",privacy_filter:"",bbox:"",accuracy:"",safe_search:"",content_type:"",machine_tags:"",machine_tag_mode:"",group_id:"",contacts:"",woe_id:"",place_id:"",media:"",has_geo:"",geo_context:"",lat:"",lon:"",radius:"",radius_units:"",is_commons:"",in_gallery:"",is_getty:"",extras:"",per_page:"",page:""}
+		'flickr.photos.search': {api_key:"",user_id:"",tags:"",tag_mode:"",text:"",min_upload_date:"",max_upload_date:"",min_taken_date:"",max_taken_date:"",license:"",sort:"",privacy_filter:"",bbox:"",accuracy:"",safe_search:"",content_type:"",machine_tags:"",machine_tag_mode:"",group_id:"",contacts:"",woe_id:"",place_id:"",media:"",has_geo:"",geo_context:"",lat:"",lon:"",radius:"",radius_units:"",is_commons:"",in_gallery:"",is_getty:"",extras:"",per_page:"",page:""},
+		'flickr.galleries.getPhotos':{api_key:"", gallery_id:"", extras:"", per_page:"", page:""},
+		'flickr.galleries.getList':{api_key:"",user_id:"", per_page:"", page:""},
+		'flickr.photosets.getList':{api_key:"",user_id:"", per_page:"", page:""},
+		'flickr.photosets.getPhotos':{api_key:"",photoset_id:"",extras:"",privacy_filter:"",per_page:"",page:"",media:""}
 	}
 	
 	$.flickr.methods = {
@@ -40,23 +46,20 @@
 		  $.extend($.flickr.settings, options);
 		  
 			return this.each(function(){
-			  //console.log('init each');			  
+							  
 			});
 
 		},
 		show : function( ) {
-		  // IS
-		  //console.log('show');	
+		  // IS	
 		   $.extend($.flickr.settings, options);
 		},
 		hide : function( ) { 
 		  // GOOD
-		  //console.log('hide');
 		   $.extend($.flickr.settings, options);
 		},
 		update : function( content ) { 
 		  // !!! 
-		  //console.log('update');
 		   $.extend($.flickr.settings, options);
 		},
 		complete_panel: function(options){
@@ -69,11 +72,29 @@
 			$.extend($.flickr.settings, options);
 			var tpl = options.template;
 			
-			//console.log(tpl);
-			
 			switch(tpl) {
+				case 'embebed':
+					
+					$(options.photos).each(function(item,value){
+						$(options._self).append(value);
+					});
+					
+					if(options.description){
+					
+						$(options.images_description).each(function(item,value){
+							var desc = $(options.images_description[item]);
+							var descItemId = $(options.images_description[item]).attr('id');
+							var id = descItemId.replace('-description','');
+							var parent = $(options._self).find('#'+id).parent();
+							
+							parent.append(desc);
+						});
+					
+					}
+					
+					
+				break
 				case 'interspersed':
-					//console.log(options.images_description);
 					
 					$(options.photos).each(function(item,value){
 						$(options._self).append(value);
@@ -87,8 +108,7 @@
 						
 						desc.insertAfter(parent);
 					});
-					
-					
+	
 					break
 					
 				case 'first-description':
@@ -160,19 +180,47 @@
 			$(options._self).append('Error de carga de datos: Revise su conexion de internet o su servicio de Flickr');	
 		}
 		,
-		photosSearch: function(options){
-			//
-			
-
-			
-			//console.log('photosSearch');
-			//console.log(this.selector);
-			
+		/*Fix for the latest version*/
+		photosSearch:function(options){
 			return this.each(function(){
-			  //console.log('each');
-			  
-			  
-			  
+				options._self = this;
+				options.method = "flickr.photos.search";
+				$.flickr.methods.functionReplace(options);
+			});
+		}
+		,
+		flickr_photos_search: function(options){
+			return this.each(function(){
+				options._self = this;
+				$.flickr.methods.functionReplace(options);
+			});
+		},
+		flickr_galleries_getList: function(options){
+			return this.each(function(){
+				options._self = this;
+				$.flickr.methods.functionReplace(options);
+			});
+		},
+		flickr_photosets_getList: function(options){
+			return this.each(function(){
+				options._self = this;
+				$.flickr.methods.functionReplace(options);
+			});
+		},
+		flickr_galleries_getPhotos: function(options){
+			return this.each(function(){
+				options._self = this;
+				$.flickr.methods.functionReplace(options);
+			});
+			
+		},
+		flickr_photosets_getPhotos:function(options){
+			return this.each(function(){
+				options._self = this;
+				$.flickr.methods.functionReplace(options);
+			});
+		},
+		functionReplace:function(options){
 			  	var op = new $.flickrClass();
 				$.flickr.counter++;
 				
@@ -180,20 +228,15 @@
 				$.extend(mySettings, op.settings);
 				
 				$.extend(mySettings, options);
-	
-			  	mySettings._self = this;
+
 				op.settings = mySettings;
-				$.flickr.methods._photos('flickr.photos.search',op.settings);
-			});
+				$.flickr.methods._photos(options.method,op.settings);
 		},
 		photosInfo: function(options){
 			//
 			$.extend(options, options);
-			//console.log('photosSearch');
-			//console.log(this.selector);
 			
 			return this.each(function(){
-			  //console.log('photosInfo each');
 			  	options._self = this;
 				$.flickr.methods.__clearContainer(options);
 				
@@ -224,7 +267,12 @@
 				var imageslist = [];
 				if(data.photos){
 					var photo = data.photos.photo;
-					if(photo){
+					
+				}else if(data.photoset){
+					var photo = data.photoset.photo;
+				}
+				
+				if(photo){
 						$(photo).each(function(item, value){
 							var src = $.flickr.methods.__src(value, options.thumbnail_size);
 							var alt = value.title;
@@ -250,7 +298,6 @@
 							
 							if(options.repeattpl){
 								newElement = $.flickr.methods.__repeatTPL(newElement,options);
-								//console.log('repeatTPL')
 							}
 							
 							
@@ -258,7 +305,6 @@
 
 						});
 					}
-				}
 				
 				options.photos = imageslist;
 				
@@ -281,9 +327,7 @@
 			
 			options.totalInfo = options.photos.length;
 			options.totalInfoCompleted = 1;
-			
-			//console.log(options.totalInfo);
-			
+	
 			$(options.photos).each(function(item,value){
 				
 				var photoId = '0';
@@ -340,12 +384,7 @@
 		}
 		,
 		__url: function(method, params) {
-			
-			//console.log('__url');
-			
 			var _url = 'http://api.flickr.com/services/rest/?method=' + method + '&format=json' + ($.flickr.methods.__isEmpty(params) ? '' : '&' + $.param(params)) + '&jsoncallback=?';
-		  
-		  	//console.log(_url);
 		  
 		  return _url; 
 			
@@ -362,21 +401,21 @@
 		__src: function(photo, size) {
 			
 		  var translate_size = (size == undefined) ? '_s' : $.flickr.methods.__translate(size);
-		  
-		  //console.log('translate_size : '+translate_size);
 		 
 		  var src = 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server +'/' + photo.id + '_' + photo.secret + translate_size + '.jpg'
-		   //console.log(src);
 		  return src;
 		},
 		__translate: function(size) {
 		  switch(size) {
 			case 'sq': return '_s' // square
+			case 's': return '_m' // small
 			case 't' : return '_t' // thumbnail
-			case 's' : return '_m' // small
-			case 'o' : return '_o' // original
-			case 'z' : return '_z' // zoom
 			case 'm' : return '' // medium
+			case 'z' : return '_z' // zoom
+			case 'b' : return '_b' // original
+			case 'o' : return '_b' // original
+			
+			
 			default : return '' // medium
 		  }
 		},
@@ -398,7 +437,13 @@
 	};
 	
 	
-  $.fn.aFlickr = function(method) {	
+  $.fn.aFlickr = function(mtd) {	
+  
+  	var method = mtd.replace(/\./gi,'_');
+	var obj = new Object();
+	obj.method = mtd;
+	
+	$.extend(arguments[1], obj);
 	
     if ( $.flickr.methods[method] ) {
       return $.flickr.methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
