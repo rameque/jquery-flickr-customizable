@@ -429,8 +429,12 @@
 		  }
 		},
 		__linkTag: function(photo, href,options) {
+			
+			var thmb = $.flickr.methods.__translate(options.thumbnail_size);
+			src2 = href.replace(thmb,'_b');
+			
 		  if (href === undefined) href = ['http://www.flickr.com/photos', photo.owner, photo.id].join('/')
-		  return $('<a href="' + href + '" title="' + photo.title + '" class="'+options.linkTagCSS+'"></a>');
+		  return $('<a href="' + src2 + '" title="' + photo.title + '" class="'+options.linkTagCSS+'"></a>');
 		},
 		__repeatTPL: function(obj,options) {
 		  var str = options.repeattpl;
