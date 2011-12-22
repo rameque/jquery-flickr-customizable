@@ -23,6 +23,7 @@
 		titleCSS:'title-css',				//css for Descrition Title
 		linkTagCSS:	'link-css',				//css for link for images			
 		titleImg:'title',					//if you want to change title attribute for anoither attribute (this is because i need this for my personal project)
+		replaceTitle:false,					
 		callback_end:function(){}			//callback function for 
 	};
 	
@@ -37,7 +38,8 @@
 		'flickr.galleries.getPhotos':{api_key:"", gallery_id:"", extras:"", per_page:"", page:""},
 		'flickr.galleries.getList':{api_key:"",user_id:"", per_page:"", page:""},
 		'flickr.photosets.getList':{api_key:"",user_id:"", per_page:"", page:""},
-		'flickr.photosets.getPhotos':{api_key:"",photoset_id:"",extras:"",privacy_filter:"",per_page:"",page:"",media:""}
+		'flickr.photosets.getPhotos':{api_key:"",photoset_id:"",extras:"",privacy_filter:"",per_page:"",page:"",media:""},
+		'flickr.photos.getInfo':{}
 	}
 	
 	$.flickr.methods = {
@@ -220,6 +222,12 @@
 				$.flickr.methods.functionReplace(options);
 			});
 		},
+		flickr_photos_getInfo:function(options){
+			return this.each(function(){
+				options._self = this;
+				$.flickr.methods.functionReplace(options);
+			});
+		},
 		functionReplace:function(options){
 			  	var op = new $.flickrClass();
 				$.flickr.counter++;
@@ -234,13 +242,10 @@
 		},
 		photosInfo: function(options){
 			//
-			$.extend(options, options);
-			
 			return this.each(function(){
-			  	options._self = this;
-				$.flickr.methods.__clearContainer(options);
-				
-				$.flickr.methods._photos('flickr.photos.getInfo',options);
+				options._self = this;
+				options.method = "flickr.photos.getInfo";
+				$.flickr.methods.functionReplace(options);
 			});
 			
 			
@@ -287,6 +292,10 @@
 													
 							$(img).attr(options.titleImg,title);
 							$(img).attr('secret',secret);
+							
+							if(options.replaceTitle){
+								$(img).attr('title',alt);
+							}
 							
 							var element = img;
 	
