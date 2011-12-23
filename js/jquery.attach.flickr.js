@@ -17,6 +17,7 @@
 		template : 'none', //interspersed , continuous, first-description, first-images,embebed
 		tpl : '', //template for locate images and description
 		repeattpl : '', //repeat template for list images
+		repeattpl_description: '', //repeat template for list description
 		desCotentCSS : 'content-css', //css for content description span
 		descCSS : 'des-css', //css for description span
 		dateCSS : 'date-css', //css for date span
@@ -426,8 +427,11 @@
 					var tags = data.photo.tags.tag;
 					var tpl = '';
 					
-					if(options.repeattpl.length > 2){
-						tpl = $(options.repeattpl);
+					if(options.repeattpl_description.length > 2){
+						tpl=$(options.repeattpl_description);
+						tpl.attr('id', photoId+'-description').addClass('desc-content ' + options.desCotentCSS);
+
+						
 					}else{
 						tpl = $('<div class="desc-content ' + options.desCotentCSS + '" id="' + photoId + '-description"></div>');
 					}
