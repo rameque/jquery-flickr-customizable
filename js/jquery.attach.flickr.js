@@ -14,6 +14,7 @@
 		extras : '', //A comma-delimited list of extra information to fetch for each returned record. Currently supported fields are: description, license, date_upload, date_taken, owner_name, icon_server, original_format, last_update, geo, tags, machine_tags, o_dims, views, media, path_alias, url_sq, url_t, url_s, url_m, url_z, url_l, url_o
 		imageLink : true, //if you want a link images to large Image from flickr
 		description : false, //if you want a image description from flickr
+		description_attr:'title,description,date,tags', //if you want a description item from flickr
 		clearContainer : false, //If you want remove previous content in container
 		template : 'none', //interspersed , continuous, first-description, first-images,embebed
 		tpl : '', //template for locate images and description
@@ -440,19 +441,26 @@
 					}else{
 						tpl = $('<div class="desc-content ' + options.desCotentCSS + '" id="' + photoId + '-description"></div>');
 					}
-
 					
-					tpl.append('<h3 class="title ' + options.titleCSS + '">' + title + '</h3>');
-					tpl.append('<span class="desc ' + options.descCSS + '">' + description + '</span>');
-					tpl.append('<span class="date ' + options.dateCSS + '">' + dateTaken + '</span>');
-
-					var inTpl = '<div class="tags">';
-					$(tags).each(function(item, value) {
-						inTpl += '<span class="tag ' + options.tagCSS + '">' + value._content + '</span>';
-					});
-					inTpl += '</div>';
-
-					tpl.append($(inTpl));
+					var arr = options.description_attr.split(',');
+	
+					for(var i=0; i<arr.length; i++){
+						if(arr[i] == 'title'){
+							tpl.append('<h3 class="title ' + options.titleCSS + '">' + title + '</h3>');
+						}else if(arr[i] == 'description'){
+							tpl.append('<span class="desc ' + options.descCSS + '">' + description + '</span>');
+						}else if(arr[i] == 'date'){
+							tpl.append('<span class="date ' + options.dateCSS + '">' + dateTaken + '</span>');
+						}else if(arr[i] == 'tags'){
+							var inTpl = '<div class="tags">';
+								$(tags).each(function(item, value) {
+								inTpl += '<span class="tag ' + options.tagCSS + '">' + value._content + '</span>';
+							});
+							inTpl += '</div>';
+							tpl.append($(inTpl));
+						}
+					}
+					
 					options.images_description.push(tpl);
 				}
 	
