@@ -4,6 +4,7 @@
 	};
 
 	$.flickrClass.prototype.settings = {
+		counter:1,
 		per_page : 10, //Photos per page
 		user_id : '', //Any user id from flickr
 		tags : '', //If you want to serach photos by tags
@@ -137,6 +138,7 @@
 		__template : function(options) {
 			$.extend($.flickr.settings, options);
 			var tpl = options.template;
+	
 			switch(tpl) {
 				case 'embebed':
 
@@ -161,18 +163,19 @@
 					$(options.photos).each(function(item, value) {
 						$(options._self).append(value);
 					});
-
-					$(options.images_description).each(function(item, value) {
-						var desc = $(options.images_description[item]);
-						
-						
-						
-						var descItemId = $(options.images_description[item]).attr('id');
-						var id = descItemId.replace('-description', '');
-						var parent = $(options._self).find('#' + id).parent();
-
-						desc.insertAfter(parent);
-					});
+					
+					
+					
+					if(options.description) {
+						$(options.images_description).each(function(item, value) {
+							var desc = $(options.images_description[item]);
+							var descItemId = $(options.images_description[item]).attr('id');
+							var id = descItemId.replace('-description', '');
+							var parent = $(options._self).find('#' + id).parent();
+	
+							desc.insertAfter(parent);
+						});
+					}
 					break
 
 				case 'first-description':
@@ -377,7 +380,7 @@
 			}).complete(function() {
 				if(options.description) {
 					options.method = 'flickr.photos.getInfo';
-					
+					options.totalPhotos = options.photos.length;
 					$(options.photos).each(function(item,value){
 						
 						var photoId = '0';
@@ -394,9 +397,9 @@
 						options.secret = secret;
 						
 						$.flickr.methods._getInfo(options);
+						
+						
 					})
-					
-					
 					
 					
 				} else {
@@ -411,7 +414,9 @@
 		_getInfo : function(options) {
 			var photoId = options.photo_id;
 			var URL = $.flickr.methods.__url(options.method,$.flickr.methods.__createObjectMethod(options));
-	
+			
+			
+			
 			if(options.images_description == undefined){
 				options.images_description = new Array()
 			}
@@ -448,15 +453,18 @@
 					inTpl += '</div>';
 
 					tpl.append($(inTpl));
-					
+					options.images_description.push(tpl);
 				}
-				options.images_description.push(tpl);
-
+	
 			}).complete(function() {
-				if(options.totalInfoCompleted == options.totalInfo) {
+				if(options.totalPhotos == undefined){
 					$.flickr.methods.complete_panel(options);
 				}
-				options.totalInfoCompleted++;
+				else if(options.totalPhotos == options.counter){
+					$.flickr.methods.complete_panel(options);
+				}
+				options.counter++;
+				
 			});
 		},
 		__url : function(method,params) {
