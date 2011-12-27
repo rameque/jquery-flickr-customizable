@@ -13,6 +13,7 @@
 		gallery_id : '', //If you want search by gallery.
 		extras : '', //A comma-delimited list of extra information to fetch for each returned record. Currently supported fields are: description, license, date_upload, date_taken, owner_name, icon_server, original_format, last_update, geo, tags, machine_tags, o_dims, views, media, path_alias, url_sq, url_t, url_s, url_m, url_z, url_l, url_o
 		imageLink : true, //if you want a link images to large Image from flickr
+		sizeLinkImage:'m',
 		description : false, //if you want a image description from flickr
 		description_attr:'title,description,date,tags', //if you want a description item from flickr
 		clearContainer : false, //If you want remove previous content in container
@@ -516,7 +517,6 @@
 					return '_b' // original
 				case 'o' :
 					return '_b' // original
-
 				default :
 					return '' // medium
 			}
@@ -524,7 +524,8 @@
 		__linkTag : function(photo, href, options) {
 
 			var thmb = $.flickr.methods.__translate(options.thumbnail_size);
-			src2 = href.replace(thmb, '_b');
+			var thmbSizeLink = $.flickr.methods.__translate(options.sizeLinkImage);
+			src2 = href.replace(thmb, thmbSizeLink);
 
 			if(href === undefined)
 				href = ['http://www.flickr.com/photos', photo.owner, photo.id].join('/')
